@@ -1,11 +1,7 @@
-library("class")
+library("C50")
 library("DMwR")
 library("gmodels")
 
-
-normalize <- function(x) {
-  return ((x - min(x)) / (max(x) - min(x)))
-}
 
 setwd("d:\\Dropbox\\kaggle\\titanic")
 
@@ -24,10 +20,6 @@ train_df$Embarked <- as.numeric(train_df$Embarked)
 #table(train_df$Pclass)
 
 train_df <- knnImputation(train_df, k=3)
-
-#train_df <- as.data.frame(lapply(train_df, normalize));
-train_df <- as.data.frame(scale(train_df));
-
 summary(train_df)
 
 # process test dta
@@ -39,22 +31,24 @@ test_df$Embarked <- factor(test_df$Embarked, levels = c("C", "Q", "S"), labels =
 test_df$Embarked <- as.numeric(test_df$Embarked)
 
 test_df <- knnImputation(test_df, k=3)
-#test_df <- as.data.frame(lapply(test_df, normalize));
-test_df <- as.data.frame(scale(test_df))
 summary(test_df)
 
 
-train_labels <-as.numeric(input_train_df[,2])
+train_labels <- as.factor(input_train_df[,2])
 summary(train_labels)
 table(train_labels)
 str(train_labels)
 
-p <- knn(train=train_df, test = test_df, cl = train_labels, k = 10)
+m <- C5.0(train_df, train_labels, trials=20)
 
-str(p)
+summary(m)
+
+p <- predict(m, test_df, type="class");
+
+summary(p)
 
 haha <- input_test_df
 haha$Survived <- as.numeric(p)-1
 
 str(haha)
-write.csv(haha[c("PassengerId", "Survived")], file="result.csv", row.names = FALSE)
+write.csv(haha[c("PassengerId", "Survived")], file="result_dtree.csv", row.names = FALSE)
