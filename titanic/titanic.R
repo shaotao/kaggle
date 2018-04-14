@@ -11,6 +11,9 @@ setwd("d:\\Dropbox\\kaggle\\titanic")
 
 # process train data
 input_train_df <- read.csv("input\\train.csv", header=TRUE, stringsAsFactors=FALSE)
+
+CrossTable(input_train_df$Pclass, input_train_df$Survived)
+
 train_df <- input_train_df[c(3,5,6,7,8,10,12)]
 train_df$Sex <- factor(train_df$Sex, levels = c("male", "female"), labels=c(0, 1))
 train_df$Sex <- as.numeric(train_df$Sex)
